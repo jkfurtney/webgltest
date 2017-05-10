@@ -76,13 +76,17 @@ camera.add( dirLight );
 camera.add( dirLight.target );
 
 var loader = new THREE.VRMLLoader();
-loader.load('./t2.wrl', function ( object ) {
+    loader.load('./t2.wrl', function ( object ) {
+object.traverse( function( node ) {
+    if( node.material ) {
+        node.material.side = THREE.DoubleSide;
+    }
+});
     scene.add( object );
 } );
-
 // renderer
 
-renderer = new THREE.WebGLRenderer( { antialias: false } );
+    renderer = new THREE.WebGLRenderer( { antialias: false,  side:THREE.DoubleSide } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 
