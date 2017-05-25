@@ -1,0 +1,8 @@
+model new
+zone create brick size 1 1 1
+
+
+;import itasca as it
+;import numpy as np
+;data = np.random.rand(it.gridpoint.count())
+;it.gridpointarray.set_extra(1,data)
