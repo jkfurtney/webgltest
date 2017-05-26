@@ -13,11 +13,14 @@ function op_bindTexture(data) {
 }
 
 function op_clearRender(data) {
-  console.log(data);
+  var bits =0;
+  if (data[1]) bits |= gl.COLOR_BUFFER_BIT;
+  if (data[2]) bits |= gl.DEPTH_BUFFER_BIT;
+  if (data[4]) bits |= gl.STENCIL_BUFFER_BIT;
+  gl.clear(bits);
 }
 
 function op_cons(data) {
-  console.log(data);
 }
 
 function op_deleteBuffer(data) {
@@ -33,7 +36,7 @@ function op_drawArray(data) {
 }
 
 function op_enableLight(data) {
-  console.log(data);
+  //console.log(data);
 }
 
 function op_end(data) {
@@ -44,20 +47,25 @@ function op_finish(data) {
   console.log(data);
 }
 
+var gl_buffers = {active: -1, buffers: {}};
+var gl_textures = {active: -1, textures: {}};
+
 function op_generateBuffer(data) {
-  console.log(data);
+  var buffer_id = data[1];
+  gl_buffers.buffers[buffer_id] = gl.createBuffer();
 }
 
 function op_generateTexture(data) {
-  console.log(data);
+  var tex_id = data[1];
+  gl_textures.textures[tex_id] = gl.createTexture();
 }
 
 function op_loadIdentity(data) {
-  console.log(data);
+  mat4.identity(currentMatrix);
 }
 
 function op_lookAt(data) {
-  console.log(data);
+  mat4.lookAt(mvMatrix, data[1], data[2], data[3]);
 }
 
 function op_popAll(data) {
@@ -68,6 +76,26 @@ function op_popAttributes(data) {
   console.log(data);
 }
 
+
+var matrixStack = [];
+function pushMatrix(m) {
+}
+function popMatrix(m) {
+}
+
+var attributeStack = [];
+function pushAttrib(m) {
+}
+function popAttrib(m) {
+}
+
+var clientAttributeStack = [];
+function pushClientAttr(m) {
+}
+function popClientAttr(m) {
+}
+
+
 function op_pushAll(data) {
   console.log(data);
 }
@@ -77,11 +105,13 @@ function op_pushAttributes(data) {
 }
 
 function op_scale(data) {
-  console.log(data);
+  // to be in shader
+  //console.log(data);
 }
 
 function op_setAlphaFunction(data) {
-  console.log(data);
+  // to be in shader
+  //console.log(data);
 }
 
 function op_setBlendFunction(data) {
@@ -93,7 +123,7 @@ function op_setBufferData(data) {
 }
 
 function op_setClearColor(data) {
-  console.log(data);
+  gl.clearColor(data[1], data[2], data[3], 1.0);
 }
 
 function op_setClientState(data) {
@@ -113,27 +143,34 @@ function op_setDepthMask(data) {
 }
 
 function op_setLabel(data) {
-  console.log(data);
+  //  console.log(data);
 }
 
 function op_setLightAmbient(data) {
-  console.log(data);
+//  console.log(data);
 }
 
 function op_setLightDiffuse(data) {
-  console.log(data);
+//  console.log(data);
 }
 
 function op_setLightPosition(data) {
-  console.log(data);
+  //console.log(data);
 }
 
 function op_setLineWidth(data) {
   console.log(data);
 }
 
+var currentMatrix = undefined;
 function op_setMatrixMode(data) {
-  console.log(data);
+  if (data[1]==5889) {
+    currentMatrix = pMatrix;
+  } else if (data[1]==5888) {
+    currentMatrix = mvMatrix;
+  }
+  else throw("bad cur mat");
+
 }
 
 function op_setNormalPointer(data) {
@@ -141,7 +178,8 @@ function op_setNormalPointer(data) {
 }
 
 function op_setPerspective(data) {
-  console.log(data);
+  var fov = data[1], aspect = data[2], znear = data[3], zfar = data[4];
+  mat4.perspective(fov,aspect,znear,zfar,pMatrix);
 }
 
 function op_setPixelStore(data) {
@@ -161,7 +199,19 @@ function op_setSmoothShadeModel(data) {
 }
 
 function op_setState(data) {
-  console.log(data);
+  var state = data[1];
+
+  if (state==2903 || state==2848 || state==2832 || state==2881 || state == 2896 ||
+      state==3008 || state==3552 || state==2853 || state==2852) {
+    //https://stackoverflow.com/questions/20335612/how-to-perform-color-material-track-in-webgl
+    return;
+  }
+  var on = data[2];
+  if (on) {
+    gl.enable(state);
+  } else {
+    gl.disable(state);
+  }
 }
 
 function op_setTexEnvironment(data) {
@@ -193,7 +243,7 @@ function op_setVertexPointer(data) {
 }
 
 function op_setViewport(data) {
-  console.log(data);
+  gl.viewport(data[1], data[2], data[3], data[4]);
 }
 
 op_functions["begin"] = op_begin;
