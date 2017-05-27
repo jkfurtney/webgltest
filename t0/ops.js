@@ -120,6 +120,9 @@ function op_setBlendFunction(data) {
 
 function op_setBufferData(data) {
   console.log(data);
+  var d = new Float32Array(decode(data[2]));
+  console.log(d);
+  console.log(d[0]);
 }
 
 function op_setClearColor(data) {
@@ -200,7 +203,7 @@ function op_setSmoothShadeModel(data) {
 
 function op_setState(data) {
   var state = data[1];
-
+  // webgl does not support this operation, this has to be done manually.
   if (state==2903 || state==2848 || state==2832 || state==2881 || state == 2896 ||
       state==3008 || state==3552 || state==2853 || state==2852) {
     //https://stackoverflow.com/questions/20335612/how-to-perform-color-material-track-in-webgl
@@ -219,7 +222,9 @@ function op_setTexEnvironment(data) {
 }
 
 function op_setTexImage1D(data) {
-  console.log(data);
+  // level,texFormat,width,border,pixFormat,type,data
+  var d = new Uint8Array(decode(data[7]));
+  console.log(d);
 }
 
 function op_setTexParameter(data) {
