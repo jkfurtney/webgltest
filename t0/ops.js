@@ -5,11 +5,15 @@ function op_begin(data) {
 }
 
 function op_bindBuffer(data) {
-  console.log(data);
+  var buffer_id = data[1];
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl_buffers.buffers[buffer_id]);
 }
 
 function op_bindTexture(data) {
-  console.log(data);
+   var d = data[1],
+      texture = gl_textures.textures[data[2]];
+  gl_textures.active = data[2];
+  gl.bindTexture(gl.TEXTURE_2D,texture);
 }
 
 function op_clearRender(data) {
@@ -33,6 +37,9 @@ function op_deleteTexture(data) {
 
 function op_drawArray(data) {
   console.log(data);
+  setMatrixUniforms();
+  //gl.drawArrays(gl.TRIANGLES, 0, 12);
+
 }
 
 function op_enableLight(data) {
@@ -69,7 +76,12 @@ function op_lookAt(data) {
 }
 
 function op_popAll(data) {
-  console.log(data);
+  op_setMatrixMode([0, GL_MODELVIEW]);
+  popMatrix();
+  op_setMatrixMode([0, GL_PROJECTION]);
+  popMatrix();
+  popClientAttrib();
+  popAttrib();
 }
 
 function op_popAttributes(data) {
@@ -79,25 +91,32 @@ function op_popAttributes(data) {
 
 var matrixStack = [];
 function pushMatrix(m) {
+  matrixStack.push(currentMatrix);
 }
 function popMatrix(m) {
+  matrixStack.pop();
 }
 
 var attributeStack = [];
-function pushAttrib(m) {
-}
-function popAttrib(m) {
-}
-
+function pushAttrib(m) {}
+function popAttrib(m) {}
 var clientAttributeStack = [];
-function pushClientAttr(m) {
-}
-function popClientAttr(m) {
-}
+function pushClientAttrib(m) {}
+function popClientAttrib(m) {}
 
+
+var GL_ALL_ATTRIB_BITS = 0x000fffff;
+var GL_CLIENT_ALL_ATTRIB_BITS = 0xffffffff;
+var GL_PROJECTION = 0x1701;
+var GL_MODELVIEW = 0x1700;
 
 function op_pushAll(data) {
-  console.log(data);
+  pushAttrib(GL_ALL_ATTRIB_BITS);
+  pushClientAttrib(GL_CLIENT_ALL_ATTRIB_BITS);
+  op_setMatrixMode([0,GL_PROJECTION]);
+  pushMatrix();
+  op_setMatrixMode([0,GL_MODELVIEW]);
+  pushMatrix();
 }
 
 function op_pushAttributes(data) {
@@ -119,10 +138,8 @@ function op_setBlendFunction(data) {
 }
 
 function op_setBufferData(data) {
-  console.log(data);
   var d = new Float32Array(decode(data[2]));
-  console.log(d);
-  console.log(d[0]);
+  gl.bufferData(gl.ARRAY_BUFFER, d, gl.STATIC_DRAW);
 }
 
 function op_setClearColor(data) {
@@ -130,11 +147,14 @@ function op_setClearColor(data) {
 }
 
 function op_setClientState(data) {
-  console.log(data);
+  //console.log(data);
+  // none of this works in webGl, there is gl.enable
 }
 
 function op_setClockwiseWinding(data) {
-  console.log(data);
+  var on = data[1];
+  if (on) gl.frontFace(gl.CW);
+  else gl.frontFace(gl.CCW);
 }
 
 function op_setColor(data) {
@@ -186,19 +206,22 @@ function op_setPerspective(data) {
 }
 
 function op_setPixelStore(data) {
-  console.log(data);
+  var store = data[1], value = data[2];
+  gl.pixelStorei(store, value);
 }
 
 function op_setPolygonMode(data) {
-  console.log(data);
+  //console.log(data);
+  // no webgl equivilent
 }
 
 function op_setPolygonOffset(data) {
-  console.log(data);
+  gl.polygonOffset(data[1], data[2]);
 }
 
 function op_setSmoothShadeModel(data) {
-  console.log(data);
+  //console.log(data);
+  // no webgl equivalent
 }
 
 function op_setState(data) {
@@ -218,17 +241,26 @@ function op_setState(data) {
 }
 
 function op_setTexEnvironment(data) {
-  console.log(data);
+  //console.log(data);
+  // no webgl equivilent
 }
 
 function op_setTexImage1D(data) {
   // level,texFormat,width,border,pixFormat,type,data
-  var d = new Uint8Array(decode(data[7]));
-  console.log(d);
+  var pixels = new Uint8Array(decode(data[7])),
+      level = data[1],
+      width = data[3];
+  //console.log(data);
+  //console.log(pixels);
+  gl.texImage2D(gl.TEXTURE_2D,level,gl.RGBA,width,1,0,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
 }
 
 function op_setTexParameter(data) {
-  console.log(data);
+  var pname = data[2],
+      param = data[3];
+  if (param!==10496) {
+    gl.texParameteri(gl.TEXTURE_2D,pname,param);
+  }
 }
 
 function op_setTexturePointer(data) {
@@ -236,7 +268,8 @@ function op_setTexturePointer(data) {
 }
 
 function op_setTwoSidedLighting(data) {
-  console.log(data);
+  //console.log(data);
+  // no webgl eq
 }
 
 function op_setVertex(data) {
@@ -244,6 +277,7 @@ function op_setVertex(data) {
 }
 
 function op_setVertexPointer(data) {
+  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
   console.log(data);
 }
 

@@ -151,7 +151,9 @@ function webGLStart() {
   var canvas = document.getElementById("lesson01-canvas");
   initGL(canvas);
 
-  var url = "http://127.0.0.1:8000/p.json";
+  var url = "http://127.0.0.1:8000/tet.json";
+  initShaders();
+
   d3.json(url, process);
 
   //initShaders();
