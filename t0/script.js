@@ -154,17 +154,13 @@ function webGLStart() {
   var url = "http://127.0.0.1:8000/tet.json";
   initShaders();
 
+  gl.enable(gl.DEPTH_TEST);
   d3.json(url, process);
-
+  //gl.clearColor(0.0, 0.0, 0.0, 1.0);
   //initShaders();
   //initBuffers();
-
-  //gl.clearColor(0.0, 0.0, 0.0, 1.0);
-  //gl.enable(gl.DEPTH_TEST);
-
   //drawScene();
 }
-
 
   var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 

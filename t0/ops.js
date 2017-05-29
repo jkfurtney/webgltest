@@ -5,18 +5,50 @@ function op_begin(data) {
 }
 
 function op_bindBuffer(data) {
+  console.log(data);
   var buffer_id = data[1];
   gl.bindBuffer(gl.ARRAY_BUFFER, gl_buffers.buffers[buffer_id]);
+  gl_buffers.active = buffer_id;
+}
+
+function op_setBufferData(data) {
+  console.log(data);
+  var d = new Float32Array(decode(data[2]));
+  console.log(d);
+  gl.bufferData(gl.ARRAY_BUFFER, d, gl.STATIC_DRAW);
+}
+
+function op_setVertexPointer(data) {
+  console.log(data);
+  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
+                         3, gl.FLOAT, false, 0, 0);
+}
+
+function op_setNormalPointer(data) {
+  console.log(data);
+}
+
+function op_setTexturePointer(data) {
+  console.log(data);
 }
 
 function op_bindTexture(data) {
+  console.log(data);
    var d = data[1],
       texture = gl_textures.textures[data[2]];
   gl_textures.active = data[2];
   gl.bindTexture(gl.TEXTURE_2D,texture);
 }
 
+function op_drawArray(data) {
+  console.log(data);
+  setMatrixUniforms();
+  gl.drawArrays(gl.TRIANGLES, 0, data[3]);
+}
+
+
 function op_clearRender(data) {
+  console.log(data);
   var bits =0;
   if (data[1]) bits |= gl.COLOR_BUFFER_BIT;
   if (data[2]) bits |= gl.DEPTH_BUFFER_BIT;
@@ -25,6 +57,7 @@ function op_clearRender(data) {
 }
 
 function op_cons(data) {
+  console.log(data);
 }
 
 function op_deleteBuffer(data) {
@@ -35,14 +68,9 @@ function op_deleteTexture(data) {
   console.log(data);
 }
 
-function op_drawArray(data) {
-  console.log(data);
-  setMatrixUniforms();
-  //gl.drawArrays(gl.TRIANGLES, 0, 12);
-
-}
 
 function op_enableLight(data) {
+  console.log(data);
   //console.log(data);
 }
 
@@ -58,24 +86,31 @@ var gl_buffers = {active: -1, buffers: {}};
 var gl_textures = {active: -1, textures: {}};
 
 function op_generateBuffer(data) {
+  console.log(data);
   var buffer_id = data[1];
   gl_buffers.buffers[buffer_id] = gl.createBuffer();
 }
 
 function op_generateTexture(data) {
+  console.log(data);
   var tex_id = data[1];
   gl_textures.textures[tex_id] = gl.createTexture();
 }
 
 function op_loadIdentity(data) {
+  console.log(data);
   mat4.identity(currentMatrix);
 }
 
 function op_lookAt(data) {
-  mat4.lookAt(mvMatrix, data[1], data[2], data[3]);
+  console.log(data);
+  console.log(mvMatrix);
+  //mvMatrix = mat4.lookAt(mvMatrix, data[1], data[2], data[3]);
+  console.log(mvMatrix);
 }
 
 function op_popAll(data) {
+  console.log(data);
   op_setMatrixMode([0, GL_MODELVIEW]);
   popMatrix();
   op_setMatrixMode([0, GL_PROJECTION]);
@@ -111,6 +146,7 @@ var GL_PROJECTION = 0x1701;
 var GL_MODELVIEW = 0x1700;
 
 function op_pushAll(data) {
+  console.log(data);
   pushAttrib(GL_ALL_ATTRIB_BITS);
   pushClientAttrib(GL_CLIENT_ALL_ATTRIB_BITS);
   op_setMatrixMode([0,GL_PROJECTION]);
@@ -124,34 +160,32 @@ function op_pushAttributes(data) {
 }
 
 function op_scale(data) {
-  // to be in shader
-  //console.log(data);
+  console.log(data);
+  mat4.scale(pMatrix,pMatrix,[data[1], data[2], data[3]]);
+  console.log(pMatrix);
 }
 
 function op_setAlphaFunction(data) {
   // to be in shader
-  //console.log(data);
+  console.log(data);
 }
 
 function op_setBlendFunction(data) {
   console.log(data);
 }
 
-function op_setBufferData(data) {
-  var d = new Float32Array(decode(data[2]));
-  gl.bufferData(gl.ARRAY_BUFFER, d, gl.STATIC_DRAW);
-}
-
 function op_setClearColor(data) {
+  console.log(data);
   gl.clearColor(data[1], data[2], data[3], 1.0);
 }
 
 function op_setClientState(data) {
-  //console.log(data);
+  console.log(data);
   // none of this works in webGl, there is gl.enable
 }
 
 function op_setClockwiseWinding(data) {
+  console.log(data);
   var on = data[1];
   if (on) gl.frontFace(gl.CW);
   else gl.frontFace(gl.CCW);
@@ -166,15 +200,15 @@ function op_setDepthMask(data) {
 }
 
 function op_setLabel(data) {
-  //  console.log(data);
+//  console.log(data);
 }
 
 function op_setLightAmbient(data) {
-//  console.log(data);
+  //console.log(data);
 }
 
 function op_setLightDiffuse(data) {
-//  console.log(data);
+  //  console.log(data);
 }
 
 function op_setLightPosition(data) {
@@ -187,6 +221,7 @@ function op_setLineWidth(data) {
 
 var currentMatrix = undefined;
 function op_setMatrixMode(data) {
+  console.log(data);
   if (data[1]==5889) {
     currentMatrix = pMatrix;
   } else if (data[1]==5888) {
@@ -196,26 +231,27 @@ function op_setMatrixMode(data) {
 
 }
 
-function op_setNormalPointer(data) {
-  console.log(data);
-}
 
 function op_setPerspective(data) {
+  console.log(data);
   var fov = data[1], aspect = data[2], znear = data[3], zfar = data[4];
   mat4.perspective(fov,aspect,znear,zfar,pMatrix);
+  console.log(pMatrix);
 }
 
 function op_setPixelStore(data) {
+  console.log(data);
   var store = data[1], value = data[2];
   gl.pixelStorei(store, value);
 }
 
 function op_setPolygonMode(data) {
-  //console.log(data);
+  console.log(data);
   // no webgl equivilent
 }
 
 function op_setPolygonOffset(data) {
+  console.log(data);
   gl.polygonOffset(data[1], data[2]);
 }
 
@@ -225,6 +261,7 @@ function op_setSmoothShadeModel(data) {
 }
 
 function op_setState(data) {
+  console.log(data);
   var state = data[1];
   // webgl does not support this operation, this has to be done manually.
   if (state==2903 || state==2848 || state==2832 || state==2881 || state == 2896 ||
@@ -241,11 +278,12 @@ function op_setState(data) {
 }
 
 function op_setTexEnvironment(data) {
-  //console.log(data);
+  console.log(data);
   // no webgl equivilent
 }
 
 function op_setTexImage1D(data) {
+  console.log(data);
   // level,texFormat,width,border,pixFormat,type,data
   var pixels = new Uint8Array(decode(data[7])),
       level = data[1],
@@ -256,6 +294,7 @@ function op_setTexImage1D(data) {
 }
 
 function op_setTexParameter(data) {
+  console.log(data);
   var pname = data[2],
       param = data[3];
   if (param!==10496) {
@@ -263,12 +302,8 @@ function op_setTexParameter(data) {
   }
 }
 
-function op_setTexturePointer(data) {
-  console.log(data);
-}
-
 function op_setTwoSidedLighting(data) {
-  //console.log(data);
+  console.log(data);
   // no webgl eq
 }
 
@@ -276,12 +311,8 @@ function op_setVertex(data) {
   console.log(data);
 }
 
-function op_setVertexPointer(data) {
-  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-  console.log(data);
-}
-
 function op_setViewport(data) {
+  console.log(data);
   gl.viewport(data[1], data[2], data[3], data[4]);
 }
 
