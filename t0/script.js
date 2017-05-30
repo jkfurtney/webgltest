@@ -129,17 +129,17 @@ function initShaders() {
 
   shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
   shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+  shaderProgram.colorUniform = gl.getUniformLocation(shaderProgram, "uColor");
 }
 
 
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
-
+var gl_color_set = [0,0,0,1];
 function setMatrixUniforms() {
   gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 }
-
 
 
 var triangleVertexPositionBuffer;

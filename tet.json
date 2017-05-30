@@ -18,7 +18,7 @@
   ["generateBuffer", 16],
   ["generateTexture", 1],
   ["generateTexture", 2],
-  ["setClearColor", 255, 255, 255],
+  ["setClearColor", 0, 255, 255],
   ["clearRender", 1, 1, 0, 0],
   ["setState", 2903, 1],
   ["setState", 2929, 1],

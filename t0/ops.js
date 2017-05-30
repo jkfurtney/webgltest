@@ -1,9 +1,10 @@
 var op_functions = {};
 
+function log_filter(data) { }
+
 function op_begin(data) {
   console.log(data);
 }
-
 function op_bindBuffer(data) {
   console.log(data);
   var buffer_id = data[1];
@@ -43,7 +44,25 @@ function op_bindTexture(data) {
 function op_drawArray(data) {
   console.log(data);
   setMatrixUniforms();
-  gl.drawArrays(gl.TRIANGLES, 0, data[3]);
+  //gl.LINES
+  //gl.TRIANGLES
+  var GL_QUADS = 7;
+  if (polygonMode[1] === FillPolygonMode) {
+    if (data[1]===GL_QUADS) {
+      // cant render quads natively, need to remap to triangles.
+      // need to also adjust normal, texture and color buffers if set.
+      // rebuild arrays as triangles.
+    }
+    gl.uniform4fv(shaderProgram.colorUniform, gl_color_set);
+    gl.drawArrays(data[1], 0, data[3]);
+  }
+  if (polygonMode[1] === LinePolygonMode) {
+    gl.uniform4fv(shaderProgram.colorUniform, gl_color_set);
+    gl.drawArrays(gl.LINE_LOOP, 0, data[3]);
+
+  }
+
+
 }
 
 
@@ -188,7 +207,9 @@ function op_setClockwiseWinding(data) {
   else gl.frontFace(gl.CCW);
 }
 
+
 function op_setColor(data) {
+  gl_color_set = data.slice(1,5);
   console.log(data);
 }
 
@@ -242,9 +263,19 @@ function op_setPixelStore(data) {
 }
 
 var polygonMode = undefined;
+
+
+var PointPolygonMode=0x1B00, // GL_POINT. 6912
+    LinePolygonMode=0x1B01,  //  GL_LINE. 6913
+    FillPolygonMode=0x1B02; // GL_FILL 6914
 function op_setPolygonMode(data) {
-  polygonMode = [data[1], data[2]];
   console.log(data);
+  if (data[2]===FillPolygonMode) {
+    console.log("FillPolygonMode");
+  } else if (data[2]===LinePolygonMode) {
+    console.log("LinePolygonMode");
+  }
+  polygonMode = [data[1], data[2]];
 }
 
 function op_setPolygonOffset(data) {

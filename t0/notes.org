@@ -1,1 +1,28 @@
+
+* rotate with mouse
+http://math.hws.edu/eck/cs424/notes2013/webgl/cube-with-rotator.html
+
+* support textures
+set a mode flag in the fragment shader that sets one of several states,
+0) color from texture
+1) color from color Array
+
+setup a uniform for the texture.
+
+* support quads and wireframe.
+we cannot directly pass these calls to the gl context since we do not
+know what we are supposed to be rendering. If we are rendering quads
+we have to re-write the buffers as two triangles, one for each quad.
+If we are rendering lines we have to pack the points in a different
+order. We do not know what is to be rendeded untill drawArray is
+called and we consult the polygon mode. So all the calls to
+bindBuffer, setBufferData and set*Pointer need to be pushed into a
+stack and dealt with when drawArray is called.
+
+Alternatively, we could pre-process the JSON data and manipulate the
+arrays beforehand?
+
+Rendering lines and rendering filled faces requires different packings!
+
+
 http://glmatrix.net/
