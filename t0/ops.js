@@ -68,10 +68,8 @@ function op_deleteTexture(data) {
   console.log(data);
 }
 
-
 function op_enableLight(data) {
   console.log(data);
-  //console.log(data);
 }
 
 function op_end(data) {
@@ -105,7 +103,7 @@ function op_loadIdentity(data) {
 function op_lookAt(data) {
   console.log(data);
   console.log(mvMatrix);
-  //mvMatrix = mat4.lookAt(mvMatrix, data[1], data[2], data[3]);
+  mvMatrix = mat4.lookAt(mvMatrix, data[1], data[2], data[3]);
   console.log(mvMatrix);
 }
 
@@ -122,7 +120,6 @@ function op_popAll(data) {
 function op_popAttributes(data) {
   console.log(data);
 }
-
 
 var matrixStack = [];
 function pushMatrix(m) {
@@ -231,11 +228,10 @@ function op_setMatrixMode(data) {
 
 }
 
-
 function op_setPerspective(data) {
   console.log(data);
   var fov = data[1], aspect = data[2], znear = data[3], zfar = data[4];
-  mat4.perspective(fov,aspect,znear,zfar,pMatrix);
+  mat4.perspective(pMatrix,fov,aspect,znear,zfar);
   console.log(pMatrix);
 }
 
@@ -245,9 +241,10 @@ function op_setPixelStore(data) {
   gl.pixelStorei(store, value);
 }
 
+var polygonMode = undefined;
 function op_setPolygonMode(data) {
+  polygonMode = [data[1], data[2]];
   console.log(data);
-  // no webgl equivilent
 }
 
 function op_setPolygonOffset(data) {
@@ -266,9 +263,12 @@ function op_setState(data) {
   // webgl does not support this operation, this has to be done manually.
   if (state==2903 || state==2848 || state==2832 || state==2881 || state == 2896 ||
       state==3008 || state==3552 || state==2853 || state==2852) {
+    console.log("unsupported state: "+state);
     //https://stackoverflow.com/questions/20335612/how-to-perform-color-material-track-in-webgl
     return;
   }
+  console.log("OK state: "+state);
+
   var on = data[2];
   if (on) {
     gl.enable(state);
@@ -313,6 +313,7 @@ function op_setVertex(data) {
 
 function op_setViewport(data) {
   console.log(data);
+  //gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.viewport(data[1], data[2], data[3], data[4]);
 }
 
