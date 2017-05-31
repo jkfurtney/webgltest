@@ -210,7 +210,10 @@ function webGLStart() {
   var canvas = document.getElementById("lesson01-canvas");
   initGL(canvas);
 
-  var url = "http://127.0.0.1:8000/tet.json";
+  //var url = "http://127.0.0.1:8000/zone_tet_combo.json";
+  //var url = "http://127.0.0.1:8000/many_quads.json";
+  var url = "http://127.0.0.1:8000/cube_cont.json";
+
   initShaders();
 
   gl.enable(gl.DEPTH_TEST);

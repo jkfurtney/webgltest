@@ -41,24 +41,74 @@ function op_bindTexture(data) {
   gl.bindTexture(gl.TEXTURE_2D,texture);
 }
 
+function getQuadVertexIndices(count) {
+  var ret = [],
+      i=0,
+      n=parseInt(count),
+      offset=0;
+  for (i=0; i<n; i++) {
+    offset = i*4;
+    ret = ret.concat([0+offset,1+offset,2+offset,
+                      0+offset,2+offset,3+offset]);
+  }
+  return ret;
+}
+
+function getQuadVertexIndicesLine(count) {
+  var ret = [],
+      i=0,
+      n=parseInt(count),
+      offset=0;
+  for (i=0; i<n; i++) {
+    offset = i*4;
+    ret = ret.concat([0+offset, 1+offset,
+                      1+offset, 2+offset,
+                      2+offset, 3+offset,
+                      3+offset, 0+offset]);
+  }
+  return ret;
+}
+
+
 function op_drawArray(data) {
   console.log(data);
   setMatrixUniforms();
-  //gl.LINES
-  //gl.TRIANGLES
-  var GL_QUADS = 7;
+  gl.uniform4fv(shaderProgram.colorUniform, gl_color_set);
+  var cubeVertexIndices;
+  var mode = data[1],
+      first = data[2],
+      count = data[3];
+  const GL_QUADS = 7,
+        GL_POLYGON = 9;
   if (polygonMode[1] === FillPolygonMode) {
-    if (data[1]===GL_QUADS) {
-      // cant render quads natively, need to remap to triangles.
-      // need to also adjust normal, texture and color buffers if set.
-      // rebuild arrays as triangles.
+    if (mode===GL_POLYGON) {
+      if (count===3) gl.drawArrays(gl.TRIANGLES, first, count);
+      if (count===4) gl.drawArrays(gl.TRIANGLE_FAN, first, count);
     }
-    gl.uniform4fv(shaderProgram.colorUniform, gl_color_set);
-    gl.drawArrays(data[1], 0, data[3]);
+    else if (mode===GL_QUADS) {
+      var cubeVerticesIndexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
+      cubeVertexIndices = getQuadVertexIndices(count);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+                    new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
+      console.log(cubeVertexIndices);
+      gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, first);
+    } else {
+      gl.drawArrays(mode, first, count);
+    }
   }
   if (polygonMode[1] === LinePolygonMode) {
-    gl.uniform4fv(shaderProgram.colorUniform, gl_color_set);
-    gl.drawArrays(gl.LINE_LOOP, 0, data[3]);
+    if (mode===GL_QUADS) {
+      cubeVerticesIndexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
+      var cubeVertexIndicesLine = getQuadVertexIndicesLine(count);
+      console.log(cubeVertexIndicesLine);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+                    new Uint16Array(cubeVertexIndicesLine), gl.STATIC_DRAW);
+      gl.drawElements(gl.LINES, count, gl.UNSIGNED_SHORT, first);
+    } else {
+      gl.drawArrays(gl.LINE_LOOP, first, count);
+    }
 
   }
 
@@ -218,23 +268,26 @@ function op_setDepthMask(data) {
 }
 
 function op_setLabel(data) {
-//  console.log(data);
+  console.log(data);
 }
 
 function op_setLightAmbient(data) {
-  //console.log(data);
+  console.log(data);
 }
 
 function op_setLightDiffuse(data) {
-  //  console.log(data);
+  console.log(data);
 }
 
 function op_setLightPosition(data) {
-  //console.log(data);
+  console.log(data);
 }
 
 function op_setLineWidth(data) {
   console.log(data);
+  // this does not do anything! we need to draw a strip of triangles
+  // if we need lines of thickness greater than one pixel.
+  gl.lineWidth(data[1]);
 }
 
 var currentMatrix = undefined;

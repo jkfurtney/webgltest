@@ -1,4 +1,9 @@
+https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API
+http://web.eecs.umich.edu/~sugih/courses/eecs487/common/notes/APITables.xml
+http://www.glge.org/
 
+Api translation
+https://github.com/cxd4/OpenGL-js
 * rotate with mouse
 http://math.hws.edu/eck/cs424/notes2013/webgl/cube-with-rotator.html
 
