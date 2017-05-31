@@ -44,10 +44,10 @@ function op_bindTexture(data) {
 function getQuadVertexIndices(count) {
   var ret = [],
       i=0,
-      n=parseInt(count),
+      n=parseInt(count/4),  // number of quads
       offset=0;
   for (i=0; i<n; i++) {
-    offset = i*4;
+    offset = 4*i;
     ret = ret.concat([0+offset,1+offset,2+offset,
                       0+offset,2+offset,3+offset]);
   }
@@ -57,7 +57,7 @@ function getQuadVertexIndices(count) {
 function getQuadVertexIndicesLine(count) {
   var ret = [],
       i=0,
-      n=parseInt(count),
+      n=parseInt(count/4), // number of quads
       offset=0;
   for (i=0; i<n; i++) {
     offset = i*4;
@@ -92,7 +92,8 @@ function op_drawArray(data) {
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
                     new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
       console.log(cubeVertexIndices);
-      gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, first);
+      gl.drawElements(gl.TRIANGLES, parseInt(count*3/2), gl.UNSIGNED_SHORT, first);
+      gl.deleteBuffer(cubeVerticesIndexBuffer);
     } else {
       gl.drawArrays(mode, first, count);
     }
@@ -102,10 +103,10 @@ function op_drawArray(data) {
       cubeVerticesIndexBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
       var cubeVertexIndicesLine = getQuadVertexIndicesLine(count);
-      console.log(cubeVertexIndicesLine);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
                     new Uint16Array(cubeVertexIndicesLine), gl.STATIC_DRAW);
-      gl.drawElements(gl.LINES, count, gl.UNSIGNED_SHORT, first);
+      gl.drawElements(gl.LINES, 2*count, gl.UNSIGNED_SHORT, first);
+      gl.deleteBuffer(cubeVerticesIndexBuffer);
     } else {
       gl.drawArrays(gl.LINE_LOOP, first, count);
     }

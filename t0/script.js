@@ -212,7 +212,8 @@ function webGLStart() {
 
   //var url = "http://127.0.0.1:8000/zone_tet_combo.json";
   //var url = "http://127.0.0.1:8000/many_quads.json";
-  var url = "http://127.0.0.1:8000/cube_cont.json";
+  //var url = "http://127.0.0.1:8000/cube_cont.json";
+  var url = "http://127.0.0.1:8000/cube_and_tet.json";
 
   initShaders();
 
