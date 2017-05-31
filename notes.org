@@ -1,0 +1,20 @@
+https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API
+http://web.eecs.umich.edu/~sugih/courses/eecs487/common/notes/APITables.xml
+http://www.glge.org/
+
+http://glmatrix.net/
+
+Api translation
+https://github.com/cxd4/OpenGL-js
+* rotate with mouse
+http://math.hws.edu/eck/cs424/notes2013/webgl/cube-with-rotator.html
+
+* shading
+Pass vertex normals into shader program.
+
+* support textures
+set a mode flag in the fragment shader that sets one of several states,
+0) color from texture
+1) color from color Array
+
+setup a uniform for the texture.
