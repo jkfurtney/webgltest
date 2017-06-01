@@ -10,24 +10,39 @@
 
 <script id="shader-fs" type="x-shader/x-fragment">
     precision mediump float;
+    varying float vMode;
     varying vec4 vColor;
+    varying highp vec2 vTextureCoord;
+    uniform sampler2D uSampler;
 
     void main(void) {
+      if (vMode==0.0) {
+        gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+      } else if (vMode==1.0) {
         gl_FragColor = vColor/255.0;
+      }
+
     }
 </script>
 
 <script id="shader-vs" type="x-shader/x-vertex">
     attribute vec3 aVertexPosition;
+    attribute float aTextureCoord;
 
+    uniform float uMode;
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
     uniform vec4 uColor;
+
     varying vec4 vColor;
+    varying float vMode;
+    varying highp vec2 vTextureCoord;
 
     void main(void) {
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
         vColor = uColor;
+        vTextureCoord = vec2(aTextureCoord,0.0);
+        vMode = uMode;
     }
 </script>
 

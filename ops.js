@@ -31,6 +31,8 @@ function op_setNormalPointer(data) {
 
 function op_setTexturePointer(data) {
   console.log(data);
+  gl.vertexAttribPointer(shaderProgram.textureCoordAttribute,
+                         2, gl.FLOAT, false, 0, 0);
 }
 
 function op_bindTexture(data) {
@@ -38,7 +40,9 @@ function op_bindTexture(data) {
    var d = data[1],
       texture = gl_textures.textures[data[2]];
   gl_textures.active = data[2];
+  gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D,texture);
+  gl.generateMipmap(gl.TEXTURE_2D);
 }
 
 function getQuadVertexIndices(count) {
@@ -72,8 +76,7 @@ function getQuadVertexIndicesLine(count) {
 
 function op_drawArray(data) {
   console.log(data);
-  setMatrixUniforms();
-  gl.uniform4fv(shaderProgram.colorUniform, gl_color_set);
+
   var cubeVertexIndices;
   var mode = data[1],
       first = data[2],
@@ -82,6 +85,7 @@ function op_drawArray(data) {
         GL_POLYGON = 9;
   if (polygonMode[1] === FillPolygonMode) {
     if (mode===GL_POLYGON) {
+      setMatrixUniforms(0.0);
       if (count===3) gl.drawArrays(gl.TRIANGLES, first, count);
       if (count===4) gl.drawArrays(gl.TRIANGLE_FAN, first, count);
     }
@@ -92,6 +96,7 @@ function op_drawArray(data) {
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
                     new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
       console.log(cubeVertexIndices);
+      setMatrixUniforms(0.0);
       gl.drawElements(gl.TRIANGLES, parseInt(count*3/2), gl.UNSIGNED_SHORT, first);
       gl.deleteBuffer(cubeVerticesIndexBuffer);
     } else {
@@ -105,9 +110,11 @@ function op_drawArray(data) {
       var cubeVertexIndicesLine = getQuadVertexIndicesLine(count);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
                     new Uint16Array(cubeVertexIndicesLine), gl.STATIC_DRAW);
+      setMatrixUniforms(1.0);
       gl.drawElements(gl.LINES, 2*count, gl.UNSIGNED_SHORT, first);
       gl.deleteBuffer(cubeVerticesIndexBuffer);
     } else {
+      setMatrixUniforms(1.0);
       gl.drawArrays(gl.LINE_LOOP, first, count);
     }
 
@@ -172,9 +179,7 @@ function op_loadIdentity(data) {
 
 function op_lookAt(data) {
   console.log(data);
-  console.log(mvMatrix);
   mvMatrix = mat4.lookAt(mvMatrix, data[1], data[2], data[3]);
-  console.log(mvMatrix);
 }
 
 function op_popAll(data) {
@@ -229,7 +234,6 @@ function op_pushAttributes(data) {
 function op_scale(data) {
   console.log(data);
   mat4.scale(pMatrix,pMatrix,[data[1], data[2], data[3]]);
-  console.log(pMatrix);
 }
 
 function op_setAlphaFunction(data) {
@@ -307,7 +311,6 @@ function op_setPerspective(data) {
   console.log(data);
   var fov = data[1], aspect = data[2], znear = data[3], zfar = data[4];
   mat4.perspective(pMatrix,fov,aspect,znear,zfar);
-  console.log(pMatrix);
 }
 
 function op_setPixelStore(data) {
